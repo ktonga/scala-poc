@@ -3,21 +3,27 @@ package autoinvest
 package trading
 
 import std._, S._
+import argonaut._, Argonaut._, ArgonautShapeless._
 
 object api {
-  // TODO better types
-  type UserId     = java.util.UUID
-  type AccountId  = java.util.UUID
-  type OrderId    = java.util.UUID
-  type Date       = java.time.LocalDate
-  type DateTime   = java.time.ZonedDateTime
-  type BigDecimal = java.math.BigDecimal
+  // TODO better types and codecs
+  type UserId     = String //java.util.UUID
+  type AccountId  = String //java.util.UUID
+  type OrderId    = String //java.util.UUID
+  type Date       = String //java.time.LocalDate
+  type DateTime   = String //java.time.ZonedDateTime
+  type BigDecimal = Double //java.math.BigDecimal
 
   final case class Position(accountId: AccountId,
                             propertyCode: String,
                             quantity: Int,
                             lastAcquiredDate: Date)
 
+  object Position {
+    implicit val decode = DecodeJson.of[Position]
+  }
+
+  // TODO custom codec
   sealed abstract class OrderSide(val name: String)
   object OrderSide {
     case object BUY  extends OrderSide("buy")
@@ -27,6 +33,7 @@ object api {
     val byName = values.map(x => x.name -> x).toMap
   }
 
+  // TODO custom codec
   sealed abstract class OrderStatus(val name: String)
   object OrderStatus {
     case object PENDING          extends OrderStatus("open")
@@ -46,6 +53,10 @@ object api {
                                    date: DateTime,
                                    commission: BigDecimal)
 
+  object SimpleOrderView {
+    implicit val decode = DecodeJson.of[SimpleOrderView]
+  }
+
   final case class PendingOrder(orderId: OrderId,
                                 propertyCode: String,
                                 orderSide: OrderSide,
@@ -58,10 +69,18 @@ object api {
                                 totalPrice: BigDecimal,
                                 totalPriceInclFees: BigDecimal)
 
+  object PendingOrder {
+    implicit val decode = DecodeJson.of[PendingOrder]
+  }
+
   final case class CreateOrderRequest(accountId: AccountId,
                                       orderSide: OrderSide,
                                       quantity: Int,
                                       price: BigDecimal,
                                       commission: BigDecimal,
                                       timestamp: Maybe[DateTime])
+
+  object CreateOrderRequest {
+    implicit val endode = EncodeJson.of[CreateOrderRequest]
+  }
 }
