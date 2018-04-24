@@ -4,7 +4,7 @@
 package com.brickx
 
 /** The prelude for the project */
-package object std {
+package object std extends result {
   // primitive types
   type Any      = scala.Any // scalafix:ok Disable.Any
   type AnyRef   = scala.AnyRef // scalafix:ok Disable.AnyRef
@@ -209,10 +209,9 @@ package object std {
   type Heap[A]             = scalaz.Heap[A]
   type Diev[A]             = scalaz.Diev[A]
   type OneAnd[F[_], A]     = scalaz.OneAnd[F, A]
-  // TODO move to scalaz ioeffect ASAP!
-  type IO[A]         = cats.effect.IO[A]
-  type Free[S[_], A] = scalaz.Free[S, A]
-  type Trampoline[A] = scalaz.Free.Trampoline[A]
+  type IO[A]               = scalaz.ioeffect.IO[A]
+  type Free[S[_], A]       = scalaz.Free[S, A]
+  type Trampoline[A]       = scalaz.Free.Trampoline[A]
   @inline final val Maybe: scalaz.Maybe.type               = scalaz.Maybe
   @inline final val Disjunction: scalaz.\/.type            = scalaz.\/
   @inline final val Validation: scalaz.Validation.type     = scalaz.Validation
@@ -237,8 +236,7 @@ package object std {
   @inline final val Heap: scalaz.Heap.type             = scalaz.Heap
   @inline final val Diev: scalaz.Diev.type             = scalaz.Diev
   @inline final val OneAnd: scalaz.OneAnd.type         = scalaz.OneAnd
-  // TODO move to scalaz ioeffect ASAP!
-  @inline final val IO: cats.effect.IO.type            = cats.effect.IO
+  @inline final val IO: scalaz.ioeffect.IO.type        = scalaz.ioeffect.IO
   @inline final val Free: scalaz.Free.type             = scalaz.Free
   @inline final val Trampoline: scalaz.Trampoline.type = scalaz.Trampoline
 

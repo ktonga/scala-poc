@@ -11,18 +11,28 @@ addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck"
 addCommandAlias("lint", "all compile:scalafixTest test:scalafixTest")
 addCommandAlias("fix", "all compile:scalafixCli test:scalafixCli")
 
-val derivingVersion = "0.13.0"
+val derivingVersion   = "0.13.0"
+val http4sVersion     = "0.18.9"
+val pureconfigVersion = "0.9.1"
+val specs2Version     = "4.0.4"
 
 libraryDependencies ++= Seq(
-  "org.scalaz" %% "scalaz-core" % "7.2.21",
-  // TODO move to scalaz ioeffect ASAP!
-  //"org.scalaz"           %% "scalaz-ioeffect"       % "1.0.0",
-  "org.typelevel"        %% "cats-effect"     % "1.0.0-RC",
-  "com.github.mpilquist" %% "simulacrum"      % "0.12.0",
-  "eu.timepit"           %% "refined-scalaz"  % "0.8.7",
-  "com.fommil"           %% "deriving-macro"  % derivingVersion % "provided",
-  "com.fommil"           %% "scalaz-deriving" % derivingVersion,
-  "org.specs2"           %% "specs2-core"     % "4.0.4" % "test"
+  "org.scalaz"                 %% "scalaz-core"            % "7.2.21",
+  "org.scalaz"                 %% "scalaz-ioeffect"        % "1.0.0",
+  "org.http4s"                 %% "http4s-dsl"             % http4sVersion,
+  "org.http4s"                 %% "http4s-blaze-server"    % http4sVersion,
+  "org.http4s"                 %% "http4s-blaze-client"    % http4sVersion,
+  "org.http4s"                 %% "http4s-argonaut"        % http4sVersion,
+  "io.argonaut"                %% "argonaut-scalaz"        % "6.2",
+  "com.github.alexarchambault" %% "argonaut-shapeless_6.2" % "1.2.0-M6",
+  "com.github.pureconfig"      %% "pureconfig"             % pureconfigVersion,
+  "com.github.pureconfig"      %% "pureconfig-http4s"      % pureconfigVersion,
+  "com.github.mpilquist"       %% "simulacrum"             % "0.12.0",
+  "eu.timepit"                 %% "refined-scalaz"         % "0.8.7",
+  "com.fommil"                 %% "deriving-macro"         % derivingVersion % "provided",
+  "com.fommil"                 %% "scalaz-deriving"        % derivingVersion,
+  "org.specs2"                 %% "specs2-core"            % specs2Version % "test",
+  "org.specs2"                 %% "specs2-scalaz"          % specs2Version % "test"
 )
 
 scalacOptions ++= Seq(
