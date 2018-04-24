@@ -83,4 +83,10 @@ object api {
   object CreateOrderRequest {
     implicit val endode = EncodeJson.of[CreateOrderRequest]
   }
+
+  case class TradingError(message: String)
+
+  object TradingError {
+    implicit val decode = DecodeJson.of[TradingError]
+  }
 }
