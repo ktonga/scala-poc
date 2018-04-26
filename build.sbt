@@ -27,6 +27,8 @@ libraryDependencies ++= Seq(
   "com.github.alexarchambault" %% "argonaut-shapeless_6.2" % "1.2.0-M6",
   "com.github.pureconfig"      %% "pureconfig"             % pureconfigVersion,
   "com.github.pureconfig"      %% "pureconfig-http4s"      % pureconfigVersion,
+  "co.fs2"                     %% "fs2-core"               % "0.10.3",
+  "org.apache.kafka"           % "kafka-clients"           % "1.1.0",
   "com.github.mpilquist"       %% "simulacrum"             % "0.12.0",
   "eu.timepit"                 %% "refined-scalaz"         % "0.8.7",
   "com.fommil"                 %% "deriving-macro"         % derivingVersion % "provided",
