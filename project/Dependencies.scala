@@ -17,7 +17,6 @@ object Dependencies {
         "http4s-blaze-client",
         "http4s-argonaut"),
     dep("io.argonaut", "6.2", "argonaut-scalaz"),
-    dep("com.github.alexarchambault", "1.2.0-M6", "argonaut-shapeless_6.2"),
     Seq("org.apache.kafka" % "kafka-clients" % "1.1.0")
   ).flatten
 
@@ -27,8 +26,7 @@ object Dependencies {
   ).flatten
 
   lazy val test = Seq(
-    dep("org.specs2", "4.0.4", "specs2-core", "specs2-scalaz", "specs2-scalacheck"),
-    dep("org.scalacheck", "1.14.0", "scalacheck")
+    dep("org.specs2", "4.0.4", "specs2-core", "specs2-scalaz", "specs2-scalacheck")
   ).flatten.map(_ % "test")
 
   def dep(g: String, v: String, as: String*) = as.map(g %% _ % v).toSeq

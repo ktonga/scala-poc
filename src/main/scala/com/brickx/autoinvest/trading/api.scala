@@ -3,7 +3,7 @@ package autoinvest
 package trading
 
 import std._, S._
-import argonaut._, Argonaut._, ArgonautShapeless._
+import argonaut._, Argonaut._, ArgonautScalaz._
 
 object api {
   // TODO better types and codecs
@@ -20,10 +20,9 @@ object api {
                             lastAcquiredDate: Date)
 
   object Position {
-    implicit val decode = DecodeJson.of[Position]
+    implicit val decode = DecodeJson.derive[Position]
   }
 
-  // TODO custom codec
   sealed abstract class OrderSide(val name: String)
   object OrderSide {
     case object BUY  extends OrderSide("buy")
@@ -31,9 +30,13 @@ object api {
 
     val values = IList(BUY, SELL)
     val byName = values.map(x => x.name -> x).toMap
+
+    implicit val decode: DecodeJson[OrderSide] =
+      DecodeJson.optionDecoder(v => v.string.flatMap(byName.lookup), "OrderSide")
+    implicit val encode: EncodeJson[OrderSide] =
+      EncodeJson.StringEncodeJson.contramap(_.name)
   }
 
-  // TODO custom codec
   sealed abstract class OrderStatus(val name: String)
   object OrderStatus {
     case object PENDING          extends OrderStatus("open")
@@ -44,6 +47,9 @@ object api {
 
     val values = IList(PENDING, CANCELLED, COMPLETE, PARTIAL, PARTIAL_COMPLETE)
     val byName = values.map(x => x.name -> x).toMap
+
+    implicit val decode: DecodeJson[OrderStatus] =
+      DecodeJson.optionDecoder(v => v.string.flatMap(byName.lookup), "OrderStatus")
   }
 
   final case class SimpleOrderView(price: BigDecimal,
@@ -54,7 +60,7 @@ object api {
                                    commission: BigDecimal)
 
   object SimpleOrderView {
-    implicit val decode = DecodeJson.of[SimpleOrderView]
+    implicit val decode = DecodeJson.derive[SimpleOrderView]
   }
 
   final case class PendingOrder(orderId: OrderId,
@@ -70,7 +76,7 @@ object api {
                                 totalPriceInclFees: BigDecimal)
 
   object PendingOrder {
-    implicit val decode = DecodeJson.of[PendingOrder]
+    implicit val decode = DecodeJson.derive[PendingOrder]
   }
 
   final case class CreateOrderRequest(accountId: AccountId,
@@ -81,12 +87,12 @@ object api {
                                       timestamp: Maybe[DateTime])
 
   object CreateOrderRequest {
-    implicit val endode = EncodeJson.of[CreateOrderRequest]
+    implicit val endode = EncodeJson.derive[CreateOrderRequest]
   }
 
   case class TradingError(message: String)
 
   object TradingError {
-    implicit val decode = DecodeJson.of[TradingError]
+    implicit val decode = DecodeJson.derive[TradingError]
   }
 }
