@@ -2,8 +2,10 @@ package com.brickx
 package autoinvest
 
 import std._
+import scalaz.syntax.std.either._
 
 import org.http4s.Uri
+import pureconfig.modules.http4s._
 
 object config {
 
@@ -17,8 +19,10 @@ object config {
     topicName: String
   )
 
-  // FIXME bug already reported https://github.com/pureconfig/pureconfig/issues/382
-  def loadConfig: Result[AppConfig] = ???
-  // pureconfig.loadConfig[AppConfig]("com.brickx.autoinvest")
+  def loadConfig: Result[AppConfig] =
+    pureconfig
+      .loadConfig[AppConfig]("com.brickx.autoinvest")
+      .disjunction
+      .leftMap(Error.config)
 
 }

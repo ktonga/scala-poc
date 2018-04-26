@@ -11,31 +11,7 @@ addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck"
 addCommandAlias("lint", "all compile:scalafixTest test:scalafixTest")
 addCommandAlias("fix", "all compile:scalafixCli test:scalafixCli")
 
-val derivingVersion   = "0.13.0"
-val http4sVersion     = "0.18.9"
-val pureconfigVersion = "0.9.1"
-val specs2Version     = "4.0.4"
-
-libraryDependencies ++= Seq(
-  "org.scalaz"                 %% "scalaz-core"            % "7.2.21",
-  "org.scalaz"                 %% "scalaz-ioeffect"        % "1.0.0",
-  "org.http4s"                 %% "http4s-dsl"             % http4sVersion,
-  "org.http4s"                 %% "http4s-blaze-server"    % http4sVersion,
-  "org.http4s"                 %% "http4s-blaze-client"    % http4sVersion,
-  "org.http4s"                 %% "http4s-argonaut"        % http4sVersion,
-  "io.argonaut"                %% "argonaut-scalaz"        % "6.2",
-  "com.github.alexarchambault" %% "argonaut-shapeless_6.2" % "1.2.0-M6",
-  "com.github.pureconfig"      %% "pureconfig"             % pureconfigVersion,
-  "com.github.pureconfig"      %% "pureconfig-http4s"      % pureconfigVersion,
-  "co.fs2"                     %% "fs2-core"               % "0.10.3",
-  "org.apache.kafka"           % "kafka-clients"           % "1.1.0",
-  "com.github.mpilquist"       %% "simulacrum"             % "0.12.0",
-  "eu.timepit"                 %% "refined-scalaz"         % "0.8.7",
-  "com.fommil"                 %% "deriving-macro"         % derivingVersion % "provided",
-  "com.fommil"                 %% "scalaz-deriving"        % derivingVersion,
-  "org.specs2"                 %% "specs2-core"            % specs2Version % "test",
-  "org.specs2"                 %% "specs2-scalaz"          % specs2Version % "test"
-)
+libraryDependencies ++= Dependencies.compile ++ Dependencies.tooling ++ Dependencies.test
 
 scalacOptions ++= Seq(
   "-language:_",
@@ -47,6 +23,7 @@ scalacOptions ++= Seq(
   "-Xlog-free-terms",
   "-Xlog-free-types",
   "-Xlog-reflective-calls",
+  "-Xmacro-settings:materialize-derivations",
   "-Yrangepos",
   "-Yno-imports",
   "-Yno-predef",
@@ -56,7 +33,7 @@ scalacOptions ++= Seq(
 )
 
 addCompilerPlugin(scalafixSemanticdb)
-addCompilerPlugin("com.fommil" %% "deriving-plugin" % derivingVersion)
+addCompilerPlugin("com.fommil" %% "deriving-plugin" % Dependencies.vDeriving)
 
 managedClasspath in Compile := {
   val res = (resourceDirectory in Compile).value
