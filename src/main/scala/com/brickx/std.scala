@@ -206,7 +206,7 @@ package object std extends result {
   type Heap[A]             = scalaz.Heap[A]
   type Diev[A]             = scalaz.Diev[A]
   type OneAnd[F[_], A]     = scalaz.OneAnd[F, A]
-  type IO[A]               = scalaz.ioeffect.IO[A]
+  type IO[E, A]            = scalaz.ioeffect.IO[E, A]
   type Free[S[_], A]       = scalaz.Free[S, A]
   type Trampoline[A]       = scalaz.Free.Trampoline[A]
   @inline final val Maybe: scalaz.Maybe.type               = scalaz.Maybe
