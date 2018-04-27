@@ -1,17 +1,15 @@
 package com.brickx
 package autoinvest
-package trading
 
 import std._
-import api._
+import TradingTypes._
 import argonaut._, Argonaut._, ArgonautScalaz._
-import OrderSide.encode
 import org.scalacheck.{ Arbitrary, Gen }, Arbitrary.arbitrary
+import OrderSide.encode
 
-trait OrphanInstances {
+trait TradingOrphanInstances {
 
-  implicit val OrderStatusEncodeJson: EncodeJson[OrderStatus] =
-    EncodeJson.StringEncodeJson.contramap(_.name)
+  implicit val OrderStatusEncodeJson: EncodeJson[OrderStatus] = EncodeJson.StringEncodeJson.contramap(_.name)
   implicit val PositionEncodeJson           = EncodeJson.derive[Position]
   implicit val SimpleOrderViewEncodeJson    = EncodeJson.derive[SimpleOrderView]
   implicit val PendingOrderEncodeJson       = EncodeJson.derive[PendingOrder]

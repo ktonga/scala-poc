@@ -1,14 +1,13 @@
 package com.brickx
 package autoinvest
-package trading
 
 import std._
-import api._
+import TradingTypes._
 import argonaut._
 import org.scalacheck.Arbitrary
 import org.specs2.{ ScalaCheck, Specification }
 
-class ApiSpec extends Specification with OrphanInstances with ScalaCheck {
+class TradingTypesSpec extends Specification with TradingOrphanInstances with ScalaCheck {
 
   def is = s2"""
     API types must be decoded from JSON

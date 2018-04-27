@@ -7,7 +7,7 @@ import scalaz.syntax.std.either._
 import org.http4s.Uri
 import pureconfig.modules.http4s._
 
-object config {
+object Config {
 
   case class AppConfig(trading: TradingConfig, events: EventsConfig)
 

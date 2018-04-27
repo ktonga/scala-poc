@@ -2,7 +2,7 @@ package com.brickx
 package autoinvest
 
 import std._
-import config._
+import Config._
 
 import org.specs2._
 import org.specs2.matcher.DisjunctionMatchers

@@ -1,11 +1,11 @@
 package com.brickx
 package autoinvest
-package trading
 
 import std._, S._
 import argonaut._, Argonaut._, ArgonautScalaz._
 
-object api {
+object TradingTypes {
+
   // TODO better types and codecs
   type UserId     = String //java.util.UUID
   type AccountId  = String //java.util.UUID

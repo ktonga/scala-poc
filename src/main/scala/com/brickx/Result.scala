@@ -5,7 +5,7 @@ import std._
 import java.lang.Throwable
 import pureconfig.error.ConfigReaderFailures
 
-trait result {
+trait Result {
 
   sealed trait Error
   case class ConfigError(failures: ConfigReaderFailures)          extends Error
