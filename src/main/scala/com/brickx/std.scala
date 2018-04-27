@@ -1,7 +1,7 @@
 package com.brickx
 
 /** The prelude for the project */
-package object std extends result {
+package object std extends Result {
   // primitive types
   type Any      = scala.Any // scalafix:ok Disable.Any
   type AnyRef   = scala.AnyRef // scalafix:ok Disable.AnyRef
