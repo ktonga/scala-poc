@@ -20,7 +20,8 @@ object Events {
   def default[F[_]](conf: EventsConfig)(implicit eff: Effect[F]): Events[F] =
     new KafkaFs2Consumer(conf)
 
-  private class KafkaFs2Consumer[F[_]](conf: EventsConfig)(implicit eff: Effect[F]) extends Events[F] {
+  private class KafkaFs2Consumer[F[_]](conf: EventsConfig)(implicit eff: Effect[F])
+      extends Events[F] {
 
     private val kafkaConsumer: F[KafkaConsumer[String, String]] = eff.delay {
       val props = new Properties
