@@ -16,8 +16,12 @@ class ConfigSpec extends Specification with DisjunctionMatchers {
   """
 
   def configOk = {
-    val expected = AppConfig(TradingConfig(Uri.uri("http://localhost:9000")),
-                             EventsConfig("localhost:9092", "auto-invest", "auto-invest"))
+    val expected = AppConfig(
+      TradingConfig(Uri.uri("http://localhost:9000")),
+      EventsConfig("localhost:9092", "auto-invest", "auto-invest"),
+      DbConfig("jdbc:postgresql://localhost:5432/autoinvest", "autoinvest", "shhh")
+    )
+
     loadConfig must be_\/-(expected)
   }
 }
