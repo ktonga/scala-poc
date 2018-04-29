@@ -17,6 +17,7 @@ object Dependencies {
         "http4s-blaze-client",
         "http4s-argonaut"),
     dep("io.argonaut", "6.2", "argonaut-scalaz"),
+    dep("org.tpolecat", "0.5.2", "doobie-core", "doobie-postgres"),
     Seq("org.apache.kafka" % "kafka-clients" % "1.1.0"),
     Seq("org.flywaydb"     % "flyway-core"   % "5.0.7")
   ).flatten
