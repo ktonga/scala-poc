@@ -1,1 +1,1 @@
-docker run --name auto-invest-postgres -e POSTGRES_USER=autoinvest -e POSTGRES_PASSWORD=shhh -d postgres
+docker run --name auto-invest-postgres -p 5432:5432 -e POSTGRES_USER=autoinvest -e POSTGRES_PASSWORD=shhh -d postgres
