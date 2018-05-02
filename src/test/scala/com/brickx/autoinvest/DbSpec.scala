@@ -2,7 +2,6 @@ package com.brickx
 package autoinvest
 
 import std._
-import scala.Predef._
 import Config.DbConfig
 
 import java.time.Clock
@@ -69,7 +68,7 @@ class DbSpec extends Specification with ScalaCheck with BeforeAll {
         _           <- db.deletePending(accountId)
         allPendings <- db.listPending.compile.toList
       } yield allPendings
-    unsafePerformIO(allIO) must not contain(accountId)
+    (unsafePerformIO(allIO) must not).contain(accountId)
   }
 
   val listPending = prop { accountIds: List[AccountId] =>
@@ -78,7 +77,7 @@ class DbSpec extends Specification with ScalaCheck with BeforeAll {
         _           <- accountIds.traverse_(id => db.savePending(Pending.create(id)))
         allPendings <- db.listPending.compile.toList
       } yield allPendings
-    unsafePerformIO(allIO) must contain(allOf(accountIds:_*))
+    unsafePerformIO(allIO) must contain(allOf(accountIds: _*))
   }
 
 }

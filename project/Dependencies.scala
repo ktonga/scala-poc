@@ -7,6 +7,7 @@ object Dependencies {
   lazy val compile = Seq(
     dep("org.scalaz", "7.2.21", "scalaz-core"),
     dep("org.scalaz", "2.1.0", "scalaz-ioeffect", "scalaz-ioeffect-cats"),
+    dep("com.codecommit", "1.2.1", "shims"),
     dep("co.fs2", "0.10.3", "fs2-core"),
     dep("eu.timepit", "0.8.7", "refined-scalaz"),
     dep("com.github.pureconfig", "0.9.1", "pureconfig", "pureconfig-http4s"),

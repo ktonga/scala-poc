@@ -13,9 +13,9 @@ import argonaut.{ DecodeJson, EncodeJson }
 import argonaut.ArgonautScalaz._
 
 trait Trading[F[_]] {
-  def getPortfolio(userId: UserId, date: Maybe[Date]): F[Result[IList[Position]]]
-  def getOrderBook(propertyCode: String): F[Result[IList[SimpleOrderView]]]
-  def createOrder(propertyCode: String, request: CreateOrderRequest): F[Result[PendingOrder]]
+  def getPortfolio(userId: UserId, date: Maybe[Date]): F[IList[Position]]
+  def getOrderBook(propertyCode: String): F[IList[SimpleOrderView]]
+  def createOrder(propertyCode: String, request: CreateOrderRequest): F[PendingOrder]
 }
 
 object Trading {
@@ -28,36 +28,39 @@ object Trading {
     implicit def jsonEntityDecoder[A: DecodeJson]: EntityDecoder[F, A] = jsonOf[F, A]
     implicit def jsonEntityEncoder[A: EncodeJson]: EntityEncoder[F, A] = jsonEncoderOf[F, A]
 
-    override def getPortfolio(userId: UserId, date: Maybe[Date]): F[Result[IList[Position]]] = {
+    override def getPortfolio(userId: UserId, date: Maybe[Date]): F[IList[Position]] = {
       val uri = endpoint / "accounts" / userId.toString / "portfolio"
       val req = Request[F](GET, uri)
       expect(req)
     }
 
-    override def getOrderBook(propertyCode: String): F[Result[IList[SimpleOrderView]]] = {
+    override def getOrderBook(propertyCode: String): F[IList[SimpleOrderView]] = {
       val uri = endpoint / "orderbooks" / propertyCode
       val req = Request[F](GET, uri)
       expect(req)
     }
 
-    override def createOrder(propertyCode: String,
-                             request: CreateOrderRequest): F[Result[PendingOrder]] = {
+    override def createOrder(propertyCode: String, request: CreateOrderRequest): F[PendingOrder] = {
       val uri = endpoint / "orderbooks" / propertyCode / "pendingOrder"
       val req = Request(POST, uri).withBody(request)
       Sync[F].flatMap(req)(expect[PendingOrder])
     }
 
-    private def expect[A](req: Request[F])(implicit d: EntityDecoder[F, A]): F[Result[A]] =
-      client.fetch(req) {
-        case Successful(resp) =>
-          d.decode(resp, strict = false)
-            .fold(Error.throwable(_, "Cannot decode response".just).left, _.right)
-        case failedResponse =>
-          EntityDecoder[F, TradingError]
-            .decode(failedResponse, strict = true)
-            .fold(Error.throwable(_, "Cannot decode error information".just).left,
-                  Error.other(_).left)
-      }
+    private def expect[A](req: Request[F])(implicit D: EntityDecoder[F, A]): F[A] =
+      (client
+        .fetch(req) {
+          case Successful(resp) =>
+            D.decode(resp, strict = false)
+              .leftMap(Error.throwable(_, "Cannot decode response".just))
+              .value
+          case failedResponse =>
+            EntityDecoder[F, TradingError]
+              .decode(failedResponse, strict = true)
+              .leftMap(Error.throwable(_, "Cannot decode error information".just))
+              .subflatMap(e => Left[Error, A](Error.other(e)))
+              .value
+        })
+        .rethrow
 
   }
 }
