@@ -1,7 +1,7 @@
 package com.brickx
 
 /** The prelude for the project */
-package object std extends Result {
+package object std extends ResultTypes {
   // primitive types
   type Any      = scala.Any // scalafix:ok Disable.Any
   type AnyRef   = scala.AnyRef // scalafix:ok Disable.AnyRef
@@ -68,6 +68,8 @@ package object std extends Result {
       @sp(scala.Int, scala.Long, scala.Double, scala.Char, scala.Boolean) B
     ](b: B): scala.Tuple2[A, B] = scala.Tuple2(a, b)
   }
+  // Arbitraries for containers fail to resolve without it
+  implicit def $conforms[A]: Predef.<:<[A, A] = Predef.$conforms
 
   // third party libs
   type Refined[A, B] = eu.timepit.refined.api.Refined[A, B]

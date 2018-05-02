@@ -4,10 +4,14 @@ import std._
 
 import java.lang.Throwable
 import pureconfig.error.ConfigReaderFailures
+import java.lang.Exception
+import scala.util.control.ControlThrowable
 
-trait Result {
+trait ResultTypes {
 
-  sealed trait Error
+  sealed abstract class Error extends Exception with ControlThrowable {
+    val asThrowable: Throwable = this
+  }
   case class ConfigError(failures: ConfigReaderFailures)          extends Error
   case class MessageError(msg: String)                            extends Error
   case class OtherError[E](other: E)                              extends Error
@@ -21,9 +25,19 @@ trait Result {
     def compose(errors: NonEmptyList[Error])          = ComposeError(errors)
     def throwable(cause: Throwable, msg: Maybe[String] = Maybe.empty): Error =
       ThrowableError(cause, msg)
+
+    def fromThrowable(t: Throwable): Error = t match {
+      case e: Error => e
+      case _        => throwable(t)
+    }
   }
 
   type Result[A]  = Error \/ A
   type ResultV[A] = ValidationNel[Error, A]
+
+  object Result {
+    def ok[A](a: A): Result[A]            = Disjunction.right(a)
+    def error[A](error: Error): Result[A] = Disjunction.left(error)
+  }
 
 }
