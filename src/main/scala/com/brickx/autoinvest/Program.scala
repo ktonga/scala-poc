@@ -14,11 +14,11 @@ trait Program[F[_]] {
 
 object Program {
 
-  case class TradingData(portfolio: IList[Position], orderBook: IList[SimpleOrderView])
+  final case class TradingData(portfolio: IList[Position], orderBook: IList[SimpleOrderView])
 
   sealed abstract class AutoInvestAction
-  case class CreateOrder(request: CreateOrderRequest)              extends AutoInvestAction
-  case class CannotProcessNow(accountId: AccountId, reason: Error) extends AutoInvestAction
+  final case class CreateOrder(request: CreateOrderRequest)              extends AutoInvestAction
+  final case class CannotProcessNow(accountId: AccountId, reason: Error) extends AutoInvestAction
 
   type ComputeAutoInvest = TradingData => Result[CreateOrderRequest]
 

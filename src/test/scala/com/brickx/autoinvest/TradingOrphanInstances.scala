@@ -7,15 +7,17 @@ import argonaut._, Argonaut._, ArgonautScalaz._
 import org.scalacheck.{ Arbitrary, Gen }, Arbitrary.arbitrary
 import OrderSide.encode
 
-trait TradingOrphanInstances {
+object TradingOrphanInstances {
 
   implicit val OrderStatusEncodeJson: EncodeJson[OrderStatus] =
     EncodeJson.StringEncodeJson.contramap(_.name)
-  implicit val PositionEncodeJson           = EncodeJson.derive[Position]
-  implicit val SimpleOrderViewEncodeJson    = EncodeJson.derive[SimpleOrderView]
-  implicit val PendingOrderEncodeJson       = EncodeJson.derive[PendingOrder]
-  implicit val CreateOrderRequestDecodeJson = DecodeJson.derive[CreateOrderRequest]
-  implicit val TradingErrorEncodeJson       = EncodeJson.derive[TradingError]
+  implicit val PositionEncodeJson: EncodeJson[Position] = EncodeJson.derive[Position]
+  implicit val SimpleOrderViewEncodeJson: EncodeJson[SimpleOrderView] =
+    EncodeJson.derive[SimpleOrderView]
+  implicit val PendingOrderEncodeJson: EncodeJson[PendingOrder] = EncodeJson.derive[PendingOrder]
+  implicit val CreateOrderRequestDecodeJson: DecodeJson[CreateOrderRequest] =
+    DecodeJson.derive[CreateOrderRequest]
+  implicit val TradingErrorEncodeJson: EncodeJson[TradingError] = EncodeJson.derive[TradingError]
 
   implicit def maybeArbitrary[A: Arbitrary]: Arbitrary[Maybe[A]] =
     Arbitrary(Gen.option(arbitrary[A]).map(Maybe.fromOption))

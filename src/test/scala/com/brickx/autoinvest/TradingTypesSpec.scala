@@ -6,8 +6,9 @@ import TradingTypes._
 import argonaut._
 import org.scalacheck.Arbitrary
 import org.specs2.{ ScalaCheck, Specification }
+import TradingOrphanInstances._
 
-class TradingTypesSpec extends Specification with TradingOrphanInstances with ScalaCheck {
+class TradingTypesSpec extends Specification with ScalaCheck {
 
   def is = s2"""
     API types must be decoded from JSON

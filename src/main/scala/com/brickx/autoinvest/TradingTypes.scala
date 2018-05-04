@@ -12,7 +12,7 @@ object TradingTypes {
                             lastAcquiredDate: Date)
 
   object Position {
-    implicit val decode = DecodeJson.derive[Position]
+    implicit val decode: DecodeJson[Position] = DecodeJson.derive[Position]
   }
 
   sealed abstract class OrderSide(val name: String)
@@ -52,7 +52,7 @@ object TradingTypes {
                                    commission: BigDecimal)
 
   object SimpleOrderView {
-    implicit val decode = DecodeJson.derive[SimpleOrderView]
+    implicit val decode: DecodeJson[SimpleOrderView] = DecodeJson.derive[SimpleOrderView]
   }
 
   final case class PendingOrder(orderId: OrderId,
@@ -68,7 +68,7 @@ object TradingTypes {
                                 totalPriceInclFees: BigDecimal)
 
   object PendingOrder {
-    implicit val decode = DecodeJson.derive[PendingOrder]
+    implicit val decode: DecodeJson[PendingOrder] = DecodeJson.derive[PendingOrder]
   }
 
   final case class CreateOrderRequest(accountId: AccountId,
@@ -79,12 +79,12 @@ object TradingTypes {
                                       timestamp: Maybe[DateTime])
 
   object CreateOrderRequest {
-    implicit val endode = EncodeJson.derive[CreateOrderRequest]
+    implicit val endode: EncodeJson[CreateOrderRequest] = EncodeJson.derive[CreateOrderRequest]
   }
 
-  case class TradingError(message: String)
+  final case class TradingError(message: String)
 
   object TradingError {
-    implicit val decode = DecodeJson.derive[TradingError]
+    implicit val decode: DecodeJson[TradingError] = DecodeJson.derive[TradingError]
   }
 }

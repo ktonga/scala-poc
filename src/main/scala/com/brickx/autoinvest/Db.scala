@@ -10,7 +10,7 @@ import cats.syntax.functor._
 import doobie.imports._
 import fs2.Stream
 
-case class Pending(accountId: AccountId, created: OffsetDateTime)
+final case class Pending(accountId: AccountId, created: OffsetDateTime)
 object Pending {
   def create(accountId: AccountId)(implicit clock: Clock): Pending =
     Pending(accountId, OffsetDateTime.now(clock))

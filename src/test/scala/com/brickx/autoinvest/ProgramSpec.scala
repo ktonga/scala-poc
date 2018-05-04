@@ -10,8 +10,9 @@ import scalaz.ioeffect.catz._
 import java.time.Clock
 import scala.Function.const
 import Program._
+import TradingOrphanInstances._
 
-class ProgramSpec extends Specification with ScalaCheck with TradingOrphanInstances with Fakes {
+class ProgramSpec extends Specification with ScalaCheck with Fakes {
 
   implicit val clock = Clock.systemDefaultZone()
 
@@ -25,7 +26,7 @@ class ProgramSpec extends Specification with ScalaCheck with TradingOrphanInstan
   val fetchTradingData = prop { (accIds: List[AccountId], pos: Position, sov: SimpleOrderView) =>
     val events  = Stream.emits(accIds)
     val trading = new ReadFakeTrading(id => pos.copy(accountId = id), sov)
-    val program = new DefaultProgram(NoOpEvents, trading, NoOpDb, const(NoOpResult))
+    val program = new DefaultProgram(NoOpEvents, trading, NoOpDb, const(noOpResult))
     val actions = events.covary[Task].through(program.toAction).compile.toList
     val idsBack: List[String] = unsafePerformIO(actions).collect {
       case CannotProcessNow(id, _) => id
@@ -55,7 +56,7 @@ class ProgramSpec extends Specification with ScalaCheck with TradingOrphanInstan
         Stream.emits(accIdOrReq.map(_.fold(CannotProcessNow(_, NoOpError), CreateOrder(_))))
       val trading = new WriteFakeTrading(po)
       val db      = new FakeDb
-      val program = new DefaultProgram(NoOpEvents, trading, db, const(NoOpResult))
+      val program = new DefaultProgram(NoOpEvents, trading, db, const(noOpResult))
       unsafePerformIO(actions.covary[Task].to(program.performAction).compile.drain)
       val ids      = accIdOrReq.collect { case Left(id) => id }
       val reqs     = accIdOrReq.collect { case Right(req) => req }
@@ -71,9 +72,9 @@ class ProgramSpec extends Specification with ScalaCheck with TradingOrphanInstan
 
 trait Fakes {
 
-  val NoOpError            = Error.message("no-op")
-  val NoOpResult           = Result.error(NoOpError)
-  def noOpTask[A]: Task[A] = IO.fail(NoOpError)
+  val NoOpError                = Error.message("no-op")
+  def noOpResult[A]: Result[A] = Result.error(NoOpError)
+  def noOpTask[A]: Task[A]     = IO.fail(NoOpError)
 
   val NoOpEvents: Events[Task] =
     new Events[Task] {
