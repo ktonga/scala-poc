@@ -22,13 +22,13 @@ object Program {
 
   type ComputeAutoInvest = TradingData => Result[CreateOrderRequest]
 
-  def default[F[_]: Sync](events: Events[F],
+  def default[F[_]: Sync: Par](events: Events[F],
                           trading: Trading[F],
                           db: Db[F],
                           computeAutoInvest: ComputeAutoInvest)(implicit clock: Clock): Program[F] =
     new DefaultProgram(events, trading, db, computeAutoInvest)
 
-  class DefaultProgram[F[_]: Sync](events: Events[F],
+  class DefaultProgram[F[_]: Sync: Par](events: Events[F],
                                    trading: Trading[F],
                                    db: Db[F],
                                    computeAutoInvest: ComputeAutoInvest)(implicit clock: Clock)
@@ -48,7 +48,7 @@ object Program {
     }
 
     private def fetchTradingData(accountId: AccountId): F[(AccountId, Result[TradingData])] =
-      ^(
+      Par[F].apply2(
         trading.getPortfolio(accountId, "today".just),
         trading.getOrderBook("some-prop")
       )(TradingData.apply).attemptR.map((accountId, _))

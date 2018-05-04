@@ -117,4 +117,5 @@ trait Fakes {
     override def savePending(pending: Pending): Task[Unit] =
       IO.point(pendings = pendings :+ pending).toUnit
   }
+
 }
