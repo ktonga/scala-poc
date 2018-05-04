@@ -1,24 +1,19 @@
 package com.brickx
 
-import std._
+import std._, Z._, S._
 import cats.effect.Sync
-import cats.syntax.either._
-import scalaz.syntax.std.either._
+import java.lang.Throwable
 
 package object autoinvest extends Types {
 
-  final class SyncEitherOps[F[_], A](self: F[Either[Error, A]])(implicit F: Sync[F]) {
-    def rethrow: F[A] = F.rethrow(F.map(self)(_.leftMap(_.asThrowable)))
+  final implicit class SyncEitherOps[F[_], A](private val self: F[Either[Error, A]])
+      extends AnyVal {
+    def rethrow(implicit F: Sync[F]): F[A] = F.rethrow(F.map(self)(_.widen[Throwable, A]))
   }
 
-  implicit def syncEitherOps[F[_]: Sync, A](self: F[Either[Error, A]]): SyncEitherOps[F, A] =
-    new SyncEitherOps(self)
-
-  final class SyncOps[F[_], A](self: F[A])(implicit F: Sync[F]) {
-    def attemptR: F[Result[A]] = F.map(F.attempt(self))(_.disjunction.leftMap(Error.fromThrowable))
+  final implicit class SyncOps[F[_], A](private val self: F[A]) extends AnyVal {
+    def attemptR(implicit F: Sync[F]): F[Result[A]] =
+      F.map(F.attempt(self))(_.disjunction.leftMap(Error.fromThrowable))
   }
-
-  implicit def syncOps[F[_]: Sync, A](self: F[A]): SyncOps[F, A] =
-    new SyncOps(self)
 
 }

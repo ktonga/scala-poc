@@ -73,7 +73,7 @@ trait Fakes {
 
   val NoOpError            = Error.message("no-op")
   val NoOpResult           = Result.error(NoOpError)
-  def noOpTask[A]: Task[A] = IO.fail(NoOpError.asThrowable)
+  def noOpTask[A]: Task[A] = IO.fail(NoOpError)
 
   val NoOpEvents: Events[Task] =
     new Events[Task] {

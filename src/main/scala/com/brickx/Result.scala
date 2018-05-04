@@ -9,9 +9,7 @@ import scala.util.control.ControlThrowable
 
 trait ResultTypes {
 
-  sealed abstract class Error extends Exception with ControlThrowable {
-    val asThrowable: Throwable = this
-  }
+  sealed abstract class Error                                     extends Exception with ControlThrowable
   case class ConfigError(failures: ConfigReaderFailures)          extends Error
   case class MessageError(msg: String)                            extends Error
   case class OtherError[E](other: E)                              extends Error
