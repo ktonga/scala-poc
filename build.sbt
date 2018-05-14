@@ -1,3 +1,5 @@
+import org.scalafmt.sbt.ScalafmtPlugin.scalafmtConfigSettings
+
 inThisBuild(
   Seq(
     scalaVersion := "2.12.4",
@@ -6,10 +8,15 @@ inThisBuild(
   )
 )
 
-addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
-addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
-addCommandAlias("lint", "all compile:scalafixTest test:scalafixTest")
-addCommandAlias("fix", "all compile:scalafixCli test:scalafixCli")
+addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt it:scalafmt")
+addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck it:scalafmtCheck")
+addCommandAlias("lint", "all compile:scalafixTest test:scalafixTest it:scalafixTest")
+addCommandAlias("fix", "all compile:scalafixCli test:scalafixCli it:scalafixCli")
+
+configs(IntegrationTest)
+Defaults.itSettings
+inConfig(IntegrationTest)(scalafmtConfigSettings)
+inConfig(IntegrationTest)(scalafixConfigSettings)
 
 libraryDependencies ++= Dependencies.compile ++ Dependencies.tooling ++ Dependencies.test
 

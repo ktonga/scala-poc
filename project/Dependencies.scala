@@ -30,7 +30,7 @@ object Dependencies {
 
   lazy val test = Seq(
     dep("org.specs2", "4.0.4", "specs2-core", "specs2-scalaz", "specs2-scalacheck")
-  ).flatten.map(_ % "test")
+  ).flatten.map(_ % "it,test")
 
   def dep(g: String, v: String, as: String*) = as.map(g %% _ % v).toSeq
 }
