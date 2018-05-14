@@ -19,7 +19,8 @@ class ConfigSpec extends Specification with DisjunctionMatchers {
     val expected = AppConfig(
       TradingConfig(Uri.uri("http://localhost:9000")),
       EventsConfig("localhost:9092", "auto-invest", "auto-invest"),
-      DbConfig("jdbc:postgresql://localhost:5432/autoinvest", "autoinvest", "shhh")
+      DbConfig("jdbc:postgresql://localhost:5432/autoinvest", "autoinvest", "shhh"),
+      ServerConfig(8080, "localhost")
     )
 
     loadConfig must be_\/-(expected)
