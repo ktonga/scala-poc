@@ -11,13 +11,14 @@ import java.time.Clock
 object Main extends SafeApp {
   type Error = std.Error
 
-  implicit val clock = Clock.systemDefaultZone()
+  implicit val clock: Clock   = Clock.systemDefaultZone()
+  implicit val log: Log[Task] = Log.default
 
   override def run(args: List[String]): IO[Error, Unit] =
     // TODO figure out a better way to deal with `Error` vs `Throwable`
     bootstrap.leftMap(Error.fromThrowable)
 
-  // TODO acquire server, httpClient and events using bracket to perform proper resource cleanup 
+  // TODO acquire server, httpClient and events using bracket to perform proper resource cleanup
   def bootstrap: Task[Unit] =
     for {
       config     <- loadConfigIO

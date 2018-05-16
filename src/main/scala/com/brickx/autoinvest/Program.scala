@@ -22,16 +22,18 @@ object Program {
 
   type ComputeAutoInvest = TradingData => Result[CreateOrderRequest]
 
-  def default[F[_]: Sync: Par](events: Events[F],
-                          trading: Trading[F],
-                          db: Db[F],
-                          computeAutoInvest: ComputeAutoInvest)(implicit clock: Clock): Program[F] =
+  def default[F[_]: Sync: Par](
+    events: Events[F],
+    trading: Trading[F],
+    db: Db[F],
+    computeAutoInvest: ComputeAutoInvest
+  )(implicit clock: Clock): Program[F] =
     new DefaultProgram(events, trading, db, computeAutoInvest)
 
   class DefaultProgram[F[_]: Sync: Par](events: Events[F],
-                                   trading: Trading[F],
-                                   db: Db[F],
-                                   computeAutoInvest: ComputeAutoInvest)(implicit clock: Clock)
+                                        trading: Trading[F],
+                                        db: Db[F],
+                                        computeAutoInvest: ComputeAutoInvest)(implicit clock: Clock)
       extends Program[F] {
 
     override def processEvents: F[Unit] =
@@ -48,10 +50,13 @@ object Program {
     }
 
     private def fetchTradingData(accountId: AccountId): F[(AccountId, Result[TradingData])] =
-      Par[F].apply2(
-        trading.getPortfolio(accountId, "today".just),
-        trading.getOrderBook("some-prop")
-      )(TradingData.apply).attemptR.map((accountId, _))
+      Par[F]
+        .apply2(
+          trading.getPortfolio(accountId, "today".just),
+          trading.getOrderBook("some-prop")
+        )(TradingData.apply)
+        .attemptR
+        .map((accountId, _))
 
     val performAction: Sink[F, AutoInvestAction] =
       _.evalMap {
