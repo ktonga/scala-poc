@@ -1,8 +1,9 @@
 package com.brickx
 package autoinvest
 
-import std._
+import std._, Z._
 
+import java.lang.Throwable
 import org.slf4j.{ Logger, LoggerFactory }
 import cats.effect.Sync
 
@@ -26,12 +27,12 @@ object Log {
   sealed trait LogEvent
   object LogEvent {
 
-    final case class ErrorLogEvent(error: Error) extends LogEvent
+    final case class ErrorLogEvent(msg: String, throwable: Maybe[Throwable])   extends LogEvent
     final case class LevelLogEvent(level: Level, msg: String, args: List[Any]) extends LogEvent
 
-    def error(error: Error): LogEvent = ErrorLogEvent(error)
-    def warn(msg: String, args: Any*): LogEvent = LevelLogEvent(Level.Warn, msg, args.toList)
-    def info(msg: String, args: Any*): LogEvent = LevelLogEvent(Level.Info, msg, args.toList)
+    def error(error: Error): LogEvent            = errorToLog(error)
+    def warn(msg: String, args: Any*): LogEvent  = LevelLogEvent(Level.Warn, msg, args.toList)
+    def info(msg: String, args: Any*): LogEvent  = LevelLogEvent(Level.Info, msg, args.toList)
     def debug(msg: String, args: Any*): LogEvent = LevelLogEvent(Level.Debug, msg, args.toList)
   }
 
@@ -41,18 +42,18 @@ object Log {
     val logger: Logger = LoggerFactory.getLogger("com.brickx.autoinvest")
 
     override def log(le: LogEvent): F[Unit] = le match {
-      case LogEvent.ErrorLogEvent(err) => error(err)
-      case LogEvent.LevelLogEvent(level, msg, args) => level match {
-        case Level.Warn => warn(msg, args:_*)
-        case Level.Info => info(msg, args:_*)
-        case Level.Debug => debug(msg, args:_*)
-      }
+      case LogEvent.ErrorLogEvent(m, t) =>
+        F.delay(t.cata(logger.error(m, _), logger.error(m)))
+      case LogEvent.LevelLogEvent(level, msg, args) =>
+        level match {
+          case Level.Warn  => warn(msg, args: _*)
+          case Level.Info  => info(msg, args: _*)
+          case Level.Debug => debug(msg, args: _*)
+        }
     }
 
     override def error(error: Error): F[Unit] =
-      F.delay(error match {
-        case err => logger.error(err.toString)
-      })
+      log(errorToLog(error))
 
     override def warn(msg: String, args: Any*): F[Unit] =
       F.delay(logger.warn(msg, args.toArray))
@@ -62,7 +63,23 @@ object Log {
 
     override def debug(msg: String, args: Any*): F[Unit] =
       F.delay(logger.debug(msg, args.toArray))
-
   }
 
+  private def errorToLog(error: Error): LogEvent.ErrorLogEvent =
+    LogEvent.ErrorLogEvent.tupled(error match {
+      case ConfigError(failures) =>
+        val fs = failures.toList.mkString("\n", "\n", "\n")
+        ("Cannot load configuration:" + fs, Maybe.empty)
+      case MessageError(msg) =>
+        (msg, Maybe.empty)
+      case ThrowableError(cause) =>
+        ("Unknown error", Just(cause))
+      case OtherError(other) =>
+        (other.toString, Maybe.empty)
+      case ComposeError(errors: NonEmptyList[Error]) =>
+        val es = errors.map(e => errorToLog(e).msg).foldLeft("\n")(_ + "\n" + _)
+        (s"Multiple errors (${errors.size}): $es", Maybe.empty)
+      case AddContextError(error, msg, ctx) =>
+        (s"${msg}\nContext: ${ctx}\nCause: ${errorToLog(error).msg}", Maybe.empty)
+    })
 }

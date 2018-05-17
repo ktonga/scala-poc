@@ -17,13 +17,18 @@ object Migrations {
   def default[F[_]: Sync](config: DbConfig)(implicit L: Log[F]): Migrations[F] =
     new FlywayMigrations(config)
 
-  private class FlywayMigrations[F[_]: Sync](config: DbConfig)(implicit L: Log[F]) extends Migrations[F] {
+  private class FlywayMigrations[F[_]: Sync](config: DbConfig)(implicit L: Log[F])
+      extends Migrations[F] {
 
-    override def migrate: F[Unit] = Sync[F].delay({
-      val flyway = new Flyway()
-      flyway.setDataSource(config.url, config.user, config.password)
-      flyway.migrate()
-    }).logged(ms => s"Migrations: $ms migrations performed").void
+    override def migrate: F[Unit] =
+      Sync[F]
+        .delay({
+          val flyway = new Flyway()
+          flyway.setDataSource(config.url, config.user, config.password)
+          flyway.migrate()
+        })
+        .logged(ms => s"Migrations: $ms migrations performed")
+        .void
 
   }
 
