@@ -1,7 +1,7 @@
 package com.brickx
 package autoinvest
 
-import std._, Z._
+import std._
 import TradingTypes._
 import cats.effect.Sync
 import org.http4s.{ EntityDecoder, EntityEncoder, Request, Uri }
@@ -51,12 +51,12 @@ object Trading {
         .fetch(req) {
           case Successful(resp) =>
             D.decode(resp, strict = false)
-              .leftMap(Error.throwable(_, "Cannot decode response".just))
+              .leftMap(comp(Error.addContext("Cannot decode response"), Error.throwable))
               .value
           case failedResponse =>
             EntityDecoder[F, TradingError]
               .decode(failedResponse, strict = true)
-              .leftMap(Error.throwable(_, "Cannot decode error information".just))
+              .leftMap(comp(Error.addContext("Cannot decode error information"), Error.throwable))
               .subflatMap(e => Left[Error, A](Error.other(e)))
               .value
         })
